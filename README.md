@@ -37,8 +37,8 @@ To set up and run the project locally, follow these steps:
 ### Clone the Repository
 
 ```bash
-git clone <repository_url>
-cd <project_directory>
+git clone <https://github.com/ParzivalXIII/inventory-management-system>
+cd <src>
 ```
 
 ### Build and Run Docker Containers
@@ -157,6 +157,6 @@ Thank you for your interest in this project! If you encounter any issues or have
 
 ## Author
 
-This project was created and is maintained by [Your Name]. You can contact me via email at [your_email@example.com] or follow me on Twitter [@your_twitter_handle].
+This project was created and is maintained by https://github.com/ParzivalXIII. You can contact me via Twitter [@ParzivalXIII].
 
 If you have any questions, feedback, or would like to contribute, please don't hesitate to reach out!
