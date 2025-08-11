@@ -44,6 +44,8 @@ class OrderCreate(BaseModel):
     product_id: int
     quantity: int
     order_date: Optional[datetime] = None
+    total_price: Optional[float] = None
+    is_fulfilled: bool = False
 
 class OrderRead(BaseModel):
     """Schema for reading an order."""
@@ -52,6 +54,8 @@ class OrderRead(BaseModel):
     organization_id: int
     quantity: int
     order_date: datetime
+    total_price: float
+    is_fulfilled: bool
 
 class SaleTimeSeries(BaseModel):
     """Schema for time series data of sales."""

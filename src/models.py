@@ -29,7 +29,6 @@ class User(SQLModel, table=True):
     email: str = Field(index=True, unique=True)
     hashed_password: str
     organization_id: int = Field(foreign_key="organization.id", index=True)
-    #organization_name: str
     is_active: bool = Field(default=True)
     is_admin: bool = Field(default=False)
 
@@ -56,5 +55,7 @@ class Order(SQLModel, table=True):
     product_id: int = Field(foreign_key="product.id", index=True)
     quantity: int
     order_date: datetime = Field(default_factory=datetime.now)
+    total_price: float = Field(default=0.0)
+    is_fulfilled: bool = Field(default=False)
 
     #product: Optional[Product] = Relationship(back_populates="orders")

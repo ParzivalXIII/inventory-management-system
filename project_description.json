@@ -1,0 +1,198 @@
+{
+  "project_name": "Dockerized Inventory & Analytics Microservice",
+  "overview": {
+    "summary": "A lightweight, pluggable backend microservice for inventory management, analytics, and authentication. Designed for local ease of use with SQLite and extensibility to production environments with PostgreSQL.",
+    "goals": [
+      "Provide CRUD operations for inventory records.",
+      "Offer REST endpoints with time-series and analytics data.",
+      "Support secure user/org authentication and permissions.",
+      "Follow API best practices (versioning, rate-limiting, caching).",
+      "Be easy to deploy and integrate using Docker Compose."
+    ]
+  },
+  "technologies": {
+    "backend_framework": "FastAPI",
+    "database_orm": "SQLModel",
+    "database_engines": [
+      "SQLite (development)",
+      "PostgreSQL (production)"
+    ],
+    "authentication": "JWT",
+    "dependency_management": "Poetry",
+    "containerization": "Docker",
+    "testing": "pytest"
+  },
+  "core_capabilities": {
+    "data_storage_and_crud": {
+      "database": [
+        "SQLite (development)",
+        "PostgreSQL (production-ready swap)"
+      ],
+      "features": [
+        "Products",
+        "Orders",
+        "Full CRUD operations"
+      ],
+      "details": {
+        "organization_model": "Defined in `src/models.py`, the `Organization` model represents an organization with associated users, products, and orders. Each organization has a unique name and a timestamp indicating when it was created.",
+        "product_update": "The `update_product` function in `src/router.py` updates an existing product for a specific organization. It ensures that the requesting user has permission to update the product by checking if the product belongs to the same organization as the user."
+      }
+    },
+    "business_analysis_endpoints": {
+      "features": [
+        "Time-series data for products and orders",
+        "JSON responses ready for charts/histograms",
+        "Sales trend and inventory level analysis"
+      ]
+    },
+    "security_and_integration": {
+      "auth": "JWT-based authentication",
+      "features": [
+        "Signup",
+        "Login",
+        "Permission checks",
+        "Organization-based access"
+      ],
+      "details": {
+        "login_flow": "The `/login` endpoint validates user credentials and returns a JWT token upon successful authentication. This process involves checking the provided email and password against the stored hashed password in the database.",
+        "token_generation": "JWT tokens are generated using the `create_access_token` function defined in `src/auth/utils.py`. These tokens encode user information and have a default expiration time of 15 minutes, which can be customized.",
+        "current_user_retrieval": "The `get_current_user` function in `src/auth/dependencies.py` decodes the JWT token from the Authorization header, retrieves the corresponding user from the database, and ensures the user exists. This function is used as a dependency in protected routes to enforce authentication.",
+        "password_hashing": "Passwords are hashed for storage and comparison during login. Although the hashing mechanism is not explicitly shown in the provided code, it is implied by the `verify_password` call in `src/auth/router.py`.",
+        "organization_based_access": "The application enforces organization-based access. For instance, the `update_product` function in `src/router.py` ensures that only users belonging to the same organization as the product can update it."
+      },
+      "integration": "Works as a standalone microservice or within existing architectures"
+    },
+    "api_best_practices": {
+      "features": [
+        "Versioned REST endpoints (/api/v1/...)",
+        "Optional rate limiting (per-user/org quotas)",
+        "Optional Redis caching for expensive queries"
+      ]
+    },
+    "deployment_and_development": {
+      "containers": [
+        "App (FastAPI)",
+        "Database",
+        "Redis (optional)"
+      ],
+      "local_dev": "Docker Compose setup"
+    }
+  },
+  "development_phases": [
+    {
+      "phase": 1,
+      "name": "MVP Scaffold",
+      "status": "Completed",
+      "tasks": [
+        "Folder/file structure",
+        "Database schema (schema.py / models.py)",
+        "Routers: Inventory & Auth (auth incomplete)",
+        "Database initialization (SQLite)",
+        "Env/config integration"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Authentication & Permissions",
+      "status": "Completed",
+      "tasks": [
+        "Add JWT auth",
+        "Secure endpoints by user/org",
+        "Implement password hashing",
+        "Token validation dependency"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Analytics Endpoints",
+      "status": "pending",
+      "tasks": [
+        "Time-series queries",
+        "Sales and stock aggregation",
+        "JSON chart-ready responses"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "PostgreSQL Swap",
+      "status": "pending",
+      "tasks": [
+        "Replace SQLite with PostgreSQL",
+        "Update docker-compose for production DB"
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Rate-Limiting & Caching",
+      "status": "pending",
+      "tasks": [
+        "Per-user/org rate limits",
+        "Redis caching for heavy queries"
+      ]
+    }
+  ],
+  "testing_and_validation": {
+    "framework": "pytest",
+    "tools": [
+      "FastAPI TestClient"
+    ],
+    "coverage": [
+      "Auth flow",
+      "Product CRUD",
+      "Order handling",
+      "Analytics endpoints"
+    ],
+    "execution": "Run tests locally in Docker for environment parity",
+    "details": {
+      "signup_test": "The test case `test_signup_missing_organization` in `src/tests/test_auth.py` verifies that the signup process requires an organization name. This highlights the importance of organization-based access in the application."
+    }
+  },
+  "directory_structure": {
+    "inventory-mgt/src": {
+      "auth": {
+        "utils.py": "Contains functions for JWT token creation and manipulation.",
+        "dependencies.py": "Provides authentication utilities, including the `get_current_user` dependency for securing routes.",
+        "router.py": "Defines authentication-related routes such as `/login`."
+      },
+      "core": {
+        "config.py": "Holds application settings and environment variables.",
+        "database.py": "Manages database connections and session utilities."
+      },
+      "crud": {
+        "crud.py": "Provides CRUD operations for database entities."
+      },
+      "main.py": "Main entry point of the application, sets up FastAPI app and routers.",
+      "models.py": "Defines database models for organizations, users, products, etc., including their relationships and constraints.",
+      "router": {
+        "router.py": "Defines routes and handles HTTP requests, including product updates with organization-based access checks."
+      },
+      "schemas": {
+        "schemas.py": "Defines data schemas for validation and serialization."
+      },
+      "tests": {
+        "test_auth.py": "Contains test cases for authentication flows, including checks for organization-based access requirements."
+      }
+    }
+  },
+  "dependencies": {
+    "runtime": {
+      "fastapi": "~0.116.0",
+      "uvicorn": "~0.35.0",
+      "sqlmodel": "0.0.14",
+      "python-jose": "~3.5.0",
+      "passlib": "~1.7.4",
+      "redis": "~5.0.4",
+      "pydantic": "~2.11.0",
+      "pydantic-email": "~2.11.0",
+      "pydantic-settings": "~2.0.3",
+      "python-multipart": "~0.0.9",
+      "python-dotenv": "~1.0.1",
+      "slowapi": "~0.1.9"
+    },
+    "development": {
+      "pytest": "~8.2.2",
+      "httpx": "~0.27.0",
+      "pytest-asyncio": "~0.23.7"
+    }
+  }
+}

@@ -48,3 +48,4 @@ inventory-mgt.code-workspace
 .continue/
 .pytest_cache
 .DS_Store
+project_description.json

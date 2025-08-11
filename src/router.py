@@ -51,3 +51,7 @@ def create_order(data: OrderCreate, db: Session = Depends(get_session), current_
 @router.get("/orders", response_model=list[OrderRead])
 def read_orders(db: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
     return crud.list_orders(db, current_user.organization_id)
+
+@router.put("/orders/{order_id}/fulfilled", response_model=OrderRead)
+def fulfill_order(order_id: int, db: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
+    return crud.update_order_fulfillment_status(db, current_user.organization_id, order_id)
