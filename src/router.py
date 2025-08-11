@@ -39,7 +39,7 @@ def delete_product(product_id: int, db: Session = Depends(get_session), current_
     product = db.get(crud.Product, product_id)
     if not product or product.organization_id != current_user.organization_id:
         raise HTTPException(status_code=404, detail="Product not found")
-    crud.delete_product(db, product_id)
+    crud.delete_product(db, org_id=current_user.organization_id, product_id=product_id)  # Pass org_id to delete_product(
     return {"message": "Product deleted successfully"}
 
 # -------- ORDERS ---------
