@@ -1,7 +1,7 @@
 # Pydantic models for API request/response schemas
 
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Any, Dict
 from pydantic import BaseModel
 
 class OrgCreate(BaseModel):
@@ -66,3 +66,15 @@ class HistogramOutput(BaseModel):
     """Schema for histogram data."""
     bins: List[float]
     counts: List[int]
+
+class Dataset(BaseModel):
+    label: str
+    data: List[float]
+
+class SalesTrendResponse(BaseModel):
+    labels: List[str]
+    datasets: List[Dict[str, Any]]
+
+class InventoryResponse(BaseModel):
+    labels: List[str]
+    datasets: List[Dict[str, Any]]

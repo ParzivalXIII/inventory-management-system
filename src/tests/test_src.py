@@ -77,10 +77,16 @@ def auth_client_fixture(client: TestClient, session: Session):
     
     return client
 
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
 def test_inventory_crud_sequence(auth_client: TestClient):
     """Test complete CRUD operations for products and orders"""
     client = auth_client
     
+    logging.info("Starting product creation")
     # Create product
     prod_resp = client.post("/products", json={
         "name": "TestProduct",
@@ -89,18 +95,21 @@ def test_inventory_crud_sequence(auth_client: TestClient):
         "quantity": 50
     })
     
-    print(f"Create product status: {prod_resp.status_code}")
-    print(f"Create product response: {prod_resp.json()}")
+    logging.debug(f"Create product status: {prod_resp.status_code}")
+    logging.debug(f"Create product response: {prod_resp.json()}")
     
     assert prod_resp.status_code in [200, 201]
     product_id = prod_resp.json()["id"]
 
+    logging.info("Starting product listing")
     # List products
     list_resp = client.get("/products")
     assert list_resp.status_code in [200, 201]
     products = list_resp.json()
+    logging.debug(f"Listed products: {products}")
     assert any(p["id"] == product_id for p in products)
 
+    logging.info("Starting product update")
     # Update product
     update_resp = client.put(f"/products/{product_id}", json={
         "name": "UpdatedTestProduct",  # Include all fields
@@ -108,6 +117,8 @@ def test_inventory_crud_sequence(auth_client: TestClient):
         "price": 15.0,
         "quantity": 45
     })
+    logging.debug(f"Update product status: {update_resp.status_code}")
+    logging.debug(f"Update product response: {update_resp.json()}")
     assert update_resp.status_code in [200, 201]
     updated_product = update_resp.json()
     assert updated_product["name"] == "UpdatedTestProduct"
@@ -115,15 +126,20 @@ def test_inventory_crud_sequence(auth_client: TestClient):
     assert updated_product["price"] == 15.0
     assert updated_product["quantity"] == 45
 
+    logging.info("Starting product deletion")
     # Delete product
     delete_resp = client.delete(f"/products/{product_id}")
+    logging.debug(f"Delete product status: {delete_resp.status_code}")
     assert delete_resp.status_code in [200, 201]
 
+    logging.info("Starting final product listing")
     # List again - should not contain deleted product
     final_resp = client.get("/products")
     final_products = final_resp.json()
+    logging.debug(f"Final listed products: {final_products}")
     assert all(p["id"] != product_id for p in final_products)
 
+    logging.info("Creating another product for order testing")
     # Create another product for order testing
     prod2_resp = client.post("/products", json={
         "name": "Prod2",
@@ -132,21 +148,25 @@ def test_inventory_crud_sequence(auth_client: TestClient):
         "quantity": 60
     })
     prod2_id = prod2_resp.json()["id"]
+    logging.debug(f"Created product Prod2 with ID: {prod2_id}")
 
+    logging.info("Starting order creation")
     # Create an order
     order_resp = client.post("/orders", json={
         "product_id": prod2_id,
         "quantity": 2
     })
     
-    print(f"Create order status: {order_resp.status_code}")
-    print(f"Create order response: {order_resp.json()}")
+    logging.debug(f"Create order status: {order_resp.status_code}")
+    logging.debug(f"Create order response: {order_resp.json()}")
     
     assert order_resp.status_code == 200
     assert order_resp.json()["quantity"] == 2
 
+    logging.info("Starting order listing")
     # List orders
     orders_resp = client.get("/orders")
     assert orders_resp.status_code == 200
     orders = orders_resp.json()
+    logging.debug(f"Listed orders: {orders}")
     assert any(o["product_id"] == prod2_id for o in orders)
